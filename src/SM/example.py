@@ -3,7 +3,7 @@ import rospy
 import smach
 from smach_ros import IntrospectionServer
 
-
+from maqui_skills import robot_factory
 
 class Setup(smach.State):
 	def __init__(self,robot):
@@ -28,12 +28,12 @@ def getInstance(robot):
 
 	with sm:
 		smach.StateMachine.add('SETUP',Setup(robot),
-			trasitions={
+			transitions={
 				'succeeded':'EXAMPLE'
 			}
 		)
 		smach.StateMachine.add('EXAMPLE',Setup(robot),
-			trasitions={
+			transitions={
 				'succeeded':'succeeded'
 			}
 		)
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 	sm = getInstance(robot)
 
 
-    sis = IntrospectionServer('example_state', sm, '/EA_INIT_STATE') #Smach Viewer
-    sis.start()
-    outcome = sm.execute()
-    sis.stop()
+	sis = IntrospectionServer('example_state', sm, '/EA_INIT_STATE') #Smach Viewer
+	sis.start()
+	outcome = sm.execute()
+	sis.stop()
