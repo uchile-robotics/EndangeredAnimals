@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import rospy
 import smach
+import random
 from smach_ros import IntrospectionServer
 
 from maqui_skills import robot_factory
+
+
 
 
 class Setup(smach.State):
@@ -22,6 +25,22 @@ class Setup(smach.State):
 		#OJO esto genera un error debido a que en los outcomes definidos de las clase no se tiene el preemted , recomiendo ejecutar para ver el error
 		return "succeeded"
 
+def GetQuestion(keyword):
+	#Cada una de estas listas son las 4 variantes para el tipo de preguntas para la misma info
+
+	lista1=["Como se llama?","De que animal me estas hablando?","PENDIENTE VARIABLE 3","PENDIENTE VARIABLE 4"]
+	lista2=["Donde se encuentra?","AAA","SSS","BBB"]
+	lista3=["9","10","11","12"]
+	lista4=["13","14","15","16"]
+
+
+
+
+	lista=[lista1,lista2,lista3,lista4]
+	n=random.randint(0,3)
+	rospy.loginfo(n)
+	return lista[keyword][n]
+
 
 class IteratorManager(smach.State):
 	def __init__(self,robot):
@@ -36,7 +55,7 @@ class IteratorManager(smach.State):
 		if self.it<self.max:
 			# Realizar pregunta, aca lo que se debe realizar es poner en el userdata de actual question 
 			#self.tts.say("Pregunta")
-			userdata.actual_question="Pregunta numero {}".format(self.it)
+			userdata.actual_question="{}".format(GetQuestion(self.it))
 			self.it+=1
 			return "preemted"
 		else:
@@ -63,11 +82,6 @@ def getInstance(robot):
 
 	with sm:
 		smach.StateMachine.add('SETUP',Setup(robot),
-			transitions={
-				'succeeded':'EXAMPLE'
-			}
-		)
-		smach.StateMachine.add('EXAMPLE',Setup(robot),
 			transitions={
 				'succeeded':'ITERATORMANAGER'
 			}
