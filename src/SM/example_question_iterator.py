@@ -5,7 +5,7 @@ import random
 from smach_ros import IntrospectionServer
 
 from maqui_skills import robot_factory
-
+import MapGame
 
 
 
@@ -55,7 +55,7 @@ class IteratorManager(smach.State):
 		if self.it<self.max:
 			# Realizar pregunta, aca lo que se debe realizar es poner en el userdata de actual question 
 			#self.tts.say("Pregunta")
-			userdata.actual_question="{}".format(GetQuestion(self.it))
+			userdata.actual_question=[self.list[self.it],"{}".format(GetQuestion(self.it))]
 			self.it+=1
 			return "preemted"
 		else:
@@ -67,13 +67,17 @@ class IteratorManager(smach.State):
 
 class AskQuestions(smach.State):
 	def __init__(self,robot):
-		smach.State.__init__(self,outcomes=["succeeded"],input_keys=["actual_question"])
+		smach.State.__init__(self,outcomes=["succeeded","map_game"],input_keys=["actual_question"])
 		self.robot=robot
 		self.tts=self.robot.get("tts")
 	
 	def execute(self,userdata):
-		self.tts.say(userdata.actual_question)
+		self.tts.say(userdata.actual_question[1])
+		if userdata.actual_question[0]=="Location":
+			return "map_game"
 		return "succeeded"
+
+
 
 
 def getInstance(robot):
@@ -93,6 +97,12 @@ def getInstance(robot):
 			}
 		)
 		smach.StateMachine.add('ASKQUESTIONS',AskQuestions(robot),
+			transitions={
+				'succeeded':'ITERATORMANAGER',
+				'map_game':'MAPGAME'
+			}
+		)
+		smach.StateMachine.add('MAPGAME',MapGame.getInstance(robot),
 			transitions={
 				'succeeded':'ITERATORMANAGER'
 			}
