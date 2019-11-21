@@ -37,11 +37,12 @@ class CoverDetector(smach.State):
 		# path = path a la imagen
 		# self.cover_detector.save_cover(path)
 		# self.tablet.show_image(path)
-		Speak(self.robot,"FALTA POR IMPLEMENTAR MAQUINA DE ESTADOS DEL DETECTOR DE CARATULAS")
+		#Speak(self.robot,"FALTA POR IMPLEMENTAR MAQUINA DE ESTADOS DEL DETECTOR DE CARATULAS")
+		self.tts.say("FALTA POR IMPLEMENTAR MAQUINA DE ESTADOS DEL DETECTOR DE CARATULAS")
 		return "succeeded"
 
 def getInstance(robot):
-	sm =smach.StateMachine(outcomes=['succeeded','aborted','preemted'],input_keys=['kid_name'])
+	sm =smach.StateMachine(outcomes=['succeeded','aborted','preempted'],input_keys=['kid_name'])
 
 
 	with sm:
