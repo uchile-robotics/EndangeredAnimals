@@ -7,6 +7,8 @@ from smach_ros import IntrospectionServer
 from maqui_skills import robot_factory
 import MapGame
 import CoverDetector
+import HearInfo
+from uchile_states.interaction.states import Speak
 
 
 
@@ -20,7 +22,7 @@ class Setup(smach.State):
 
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
-		self.tts.say("Hola esto es un test")
+		Speak(self.robot,"Hola esto es un test")
 		userdata.kid_name="TEST"
 		#return "preemted" 
 		#OJO esto genera un error debido a que en los outcomes definidos de las clase no se tiene el preemted , recomiendo ejecutar para ver el error
@@ -49,7 +51,7 @@ class IteratorManager(smach.State):
 		self.it=0
 		self.list=["Name","Location","Cantidad","Image"]
 		self.max=len(self.list)
-		smach.State.__init__(self,outcomes=["succeeded","aborted","preemted"],output_keys=["actual_question"]) # Preemted se usara cuando faltan preguntas a realizar 
+		smach.State.__init__(self,outcomes=["succeeded","aborted","preempted"],output_keys=["actual_question"]) # Preemted se usara cuando faltan preguntas a realizar 
 		self.robot=robot
 		self.tts=self.robot.get("tts")
 
@@ -59,7 +61,7 @@ class IteratorManager(smach.State):
 			#self.tts.say("Pregunta")
 			userdata.actual_question=[self.list[self.it],"{}".format(GetQuestion(self.it))]
 			self.it+=1
-			return "preemted"
+			return "preempted"
 		else:
 			self.tts.say("Termine")
 			return "succeeded"
@@ -74,7 +76,8 @@ class AskQuestions(smach.State):
 		self.tts=self.robot.get("tts")
 	
 	def execute(self,userdata):
-		self.tts.say(userdata.actual_question[1])
+		#self.tts.say(userdata.actual_question[1])
+		Speak(self.robot,userdata.actual_question[1])
 		if userdata.actual_question[0]=="Location":
 			return "map_game"
 		if userdata.actual_question[0]=="Image":
@@ -85,7 +88,7 @@ class AskQuestions(smach.State):
 
 
 def getInstance(robot):
-	sm =smach.StateMachine(outcomes=['succeeded','aborted','preemted'])
+	sm =smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
 
 
 	with sm:
@@ -97,12 +100,12 @@ def getInstance(robot):
 		smach.StateMachine.add('ITERATORMANAGER',IteratorManager(robot),
 			transitions={
 				'succeeded':'succeeded',
-				'preemted':'ASKQUESTIONS'
+				'preempted':'ASKQUESTIONS'
 			}
 		)
 		smach.StateMachine.add('ASKQUESTIONS',AskQuestions(robot),
 			transitions={
-				'succeeded':'ITERATORMANAGER',
+				'succeeded':'HEAR_INFO',
 				'map_game':'MAP_GAME',
 				'cover_detector':'COVER_DETECTOR'
 			}
@@ -110,6 +113,12 @@ def getInstance(robot):
 		smach.StateMachine.add('MAP_GAME',MapGame.getInstance(robot),
 			transitions={
 				'succeeded':'ITERATORMANAGER'
+			}
+		)
+		smach.StateMachine.add('HEAR_INFO',HearInfo.getInstance(robot),
+			transitions={
+				'succeeded':'ITERATORMANAGER',
+				'aborted':'ITERATORMANAGER'
 			}
 		)
 		smach.StateMachine.add('COVER_DETECTOR',CoverDetector.getInstance(robot),
@@ -126,7 +135,7 @@ if __name__ == '__main__':
 	robot= robot_factory.build([
 		"audition",
 		"tts",
-		"tablet"],core=True)
+		"tablet"],core=False)
 
 	sm = getInstance(robot)
 
