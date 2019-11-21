@@ -34,7 +34,7 @@ class Game(smach.State):
 		return "succeeded"
 
 def getInstance(robot):
-	sm =smach.StateMachine(outcomes=['succeeded','aborted','preemted'])
+	sm =smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
 
 
 	with sm:
