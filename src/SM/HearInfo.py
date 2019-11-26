@@ -45,7 +45,7 @@ def getInstance(robot):
 
 
 	with sm:
-		smach.StateMachine.add('HEAR',Hear(robot,timeout=20),
+		smach.StateMachine.add('HEAR',Hear(robot,timeout=20,eyes=False),
 			transitions={
 				'succeeded':'ADDINFO',
 				'preempted':'ITERATOR'
