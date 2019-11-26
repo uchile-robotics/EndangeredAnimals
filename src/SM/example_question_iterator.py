@@ -15,43 +15,44 @@ from uchile_states.interaction.states import Speak
 class Setup(smach.State):
 	def __init__(self,robot):
 		smach.State.__init__(self,outcomes=["succeeded","aborted"],output_keys=["kid_name"]) # Aca se ponen todas las salidas que pueden tener este estado
-		self.robot=robot
-		self.audition=self.robot.get("audition")
-		self.tts=self.robot.get("tts")
+		self.robot = robot
+		self.audition = self.robot.get("audition")
+		self.tts = self.robot.get("tts")
 		#self.skill=self.robot.get("skill")
 
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
-		Speak(self.robot,"Hola esto es un test")
-		userdata.kid_name="TEST"
+		self.tts.say("Hola, esto es animales en extincion")
+		userdata.kid_name = "TEST"
 		#return "preemted" 
 		#OJO esto genera un error debido a que en los outcomes definidos de las clase no se tiene el preemted , recomiendo ejecutar para ver el error
 		return "succeeded"
 
 def GetQuestion(keyword):
 	#Cada una de estas listas son las 4 variantes para el tipo de preguntas para la misma info
+	#NOMBRE;HABITAT en Chile;ESPECIMENES RESTANTES; DATOS; FOTO; QUIEN ME ENSENO
+	lista1 = ["Como se llama?","De que animal me estas hablando?","Este animal tiene algun nombre?","Puedes decirme su nombre?"]
+	lista2 = ["Donde se encuentra?","Cual es su distribucion?","En que zona de Chile vive?","En que lugares habita"]
+	lista3 = ["Cuantos especimenes quedan?","Cuantos hay actualmente?","Tienes algun numero de especimenes restantes?","Hay algun numero estimado de especies restantes?"]
+	lista4 = ["Por que esta en peligro?" ,"Por que esta desapareciendo?","Que esta causando su disminucion?","Que esta motivando su desaparicion?", "Que motivos pone en peligro a este animal?"]
+	lista5 = ["Como luce?","Me puedes mostrar una imaagen","Tienes alguna foto para mostrar?","me puedes mostrar  una foto del animaal?"]
+	lista6 = ["Como te llamas?", "Cual es tu nombre?", "Me podrias decir tu nombre?", "Quien eres?"]
 
-	lista1=["Como se llama?","De que animal me estas hablando?","PENDIENTE VARIABLE 3","PENDIENTE VARIABLE 4"]
-	lista2=["Donde se encuentra?","AAA","SSS","BBB"]
-	lista3=["9","10","11","12"]
-	lista4=["13","14","15","16"]
-	lista5=["Como luce?","Me puedes mostrar una imagen","15","16"]
 
 
-
-
-	lista=[lista1,lista2,lista3,lista4,lista5]
-	n=random.randint(0,3)
+	lista=[lista1,lista2,lista3,lista4,lista5, lista6]
+	n=random.randint(0, 3)
 	rospy.loginfo(n)
+	rospy.loginfo(keyword)
 	return lista[keyword][n]
 
 
 class IteratorManager(smach.State):
 	def __init__(self,robot):
-		self.it=0
-		self.list=["Name","Location","Cantidad","Image"]
-		self.max=len(self.list)
 		smach.State.__init__(self,outcomes=["succeeded","aborted","preempted"],output_keys=["actual_question"]) # Preemted se usara cuando faltan preguntas a realizar 
+		self.it=0
+		self.list=["Name","Location","Cantidad","Data_random", 'Image', 'Child_name']
+		self.max=len(self.list)
 		self.robot=robot
 		self.tts=self.robot.get("tts")
 
@@ -77,7 +78,7 @@ class AskQuestions(smach.State):
 	
 	def execute(self,userdata):
 		#self.tts.say(userdata.actual_question[1])
-		Speak(self.robot,userdata.actual_question[1])
+		self.tts.say(userdata.actual_question[1])
 		if userdata.actual_question[0]=="Location":
 			return "map_game"
 		if userdata.actual_question[0]=="Image":
