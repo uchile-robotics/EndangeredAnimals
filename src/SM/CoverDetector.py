@@ -17,7 +17,11 @@ class Setup(smach.State):
 
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
-		self.tts.say("Setup detector de CARATULAS")
+		#self.tts.say("Setup detector de CARATULAS")
+		self.tts.say("Me gustaria guardar una imagen del animal para la ficha, puedes mostrarme una?")
+		self.robot.tts.wait_until_done()
+		rospy.sleep(10)
+
 
 		#return "preemted" 
 		#OJO esto genera un error debido a que en los outcomes definidos de las clase no se tiene el preemted , recomiendo ejecutar para ver el error
@@ -38,7 +42,8 @@ class CoverDetector(smach.State):
 		# self.cover_detector.save_cover(path)
 		# self.tablet.show_image(path)
 		#Speak(self.robot,"FALTA POR IMPLEMENTAR MAQUINA DE ESTADOS DEL DETECTOR DE CARATULAS")
-		self.tts.say("FALTA POR IMPLEMENTAR MAQUINA DE ESTADOS DEL DETECTOR DE CARATULAS")
+		#self.tts.say("FALTA POR IMPLEMENTAR MAQUINA DE ESTADOS DEL DETECTOR DE CARATULAS")
+		self.robot.tts.wait_until_done()
 		return "succeeded"
 
 def getInstance(robot):

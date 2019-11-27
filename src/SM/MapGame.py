@@ -19,7 +19,10 @@ class Setup(smach.State):
 
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
-		self.tts.say("Setup juego del mapa")
+		#self.tts.say("Setup juego del mapa")
+		self.tts.say("Podrias seleccionar una parte de Chile donde se encuentra el animal?")
+		self.robot.tts.wait_until_done()
+		rospy.sleep(10)
 
 		#return "preemted" 
 		#OJO esto genera un error debido a que en los outcomes definidos de las clase no se tiene el preemted , recomiendo ejecutar para ver el error
@@ -32,7 +35,7 @@ class Game(smach.State):
 		self.robot=robot
 		self.tts=self.robot.get("tts")
 	def execute(self,userdata):
-		Speak(self.robot,"FALTA POR IMPLEMENTAR JUEGO DEL MAPA")
+		Speak(self.robot,"SETUP JUEGO DEL MAPA")
 		return "succeeded"
 
 def getInstance(robot):

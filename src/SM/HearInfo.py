@@ -14,10 +14,12 @@ class Iterator(smach.State):
 		self.robot=robot
 		self.it=0
 		self.max_tries=2
-		#self.tts=self.robot.get("tts")
+		self.tts=self.robot.get("tts")
 
 	def execute(self,userdata):
-		Speak(self.robot,"Oh lo siento no te escuche bien puedes repetir porfavor")
+		self.tts.say("Oh, lo siento no te escuche bien, puedes repetir por favor?")
+		Speak(self.robot,"Oh, lo siento no te escuche bien puedes repetir por favor?")
+		self.robot.tts.wait_until_done()
 		if self.it<self.max_tries:
 			self.it+=1
 			return "preempted"
@@ -45,7 +47,7 @@ def getInstance(robot):
 
 
 	with sm:
-		smach.StateMachine.add('HEAR',Hear(robot,timeout=20),
+		smach.StateMachine.add('HEAR',Hear(robot,timeout=20,eyes=False),
 			transitions={
 				'succeeded':'ADDINFO',
 				'preempted':'ITERATOR'
