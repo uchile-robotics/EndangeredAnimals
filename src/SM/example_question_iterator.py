@@ -5,7 +5,7 @@ import random
 from smach_ros import IntrospectionServer
 
 from maqui_skills import robot_factory
-import MapGame
+import MapInteraction
 import CoverDetector
 import HearInfo
 from uchile_states.interaction.states import Speak
@@ -110,7 +110,7 @@ def getInstance(robot):
 				'cover_detector':'COVER_DETECTOR'
 			}
 		)
-		smach.StateMachine.add('MAP_GAME',MapGame.getInstance(robot),
+		smach.StateMachine.add('MAP_GAME',MapInteraction.getInstance(robot),
 			transitions={
 				'succeeded':'ITERATORMANAGER'
 			}
