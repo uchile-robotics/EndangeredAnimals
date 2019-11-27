@@ -6,6 +6,8 @@ from smach_ros import IntrospectionServer
 from maqui_skills import robot_factory
 
 from uchile_states.interaction.states import Speak
+from uchile_srvs.srv import Onoff,PersonDetection, PersonDetectionResponse
+
 
 class Setup(smach.State):
 	def __init__(self,robot):
