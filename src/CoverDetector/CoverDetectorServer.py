@@ -63,7 +63,6 @@ class CoverDetectorServer:
         except CvBridgeError as e:
             print(e)
 
-        #cv_depth_image = cv2.resize(cv_depth_image,(cv_image.shape[1],cv_image.shape[0]),interpolation=cv2.INTER_LINEAR)
         Model_depth=image_geometry.PinholeCameraModel()
         Model_depth.fromCameraInfo(depth_info)
 
@@ -117,68 +116,7 @@ class CoverDetectorServer:
         vector22[2]=vector12[2]*minimo*0.001
         
         pixel2 = Model_rgb.project3dToPixel(vector22)
-        """
-        (trans,rot) = self.listener.lookupTransform(Model_rgb.tfFrame(),Model_depth.tfFrame(),rospy.Time(0))
 
-        vector1 = Model_depth.projectPixelTo3dRay((x,y)) #sobre imagen rect
-        vector2=[0,0,0]
-
-        vector2[0]=vector1[0]*minimo*0.001 + trans[0]
-        vector2[1]=vector1[1]*minimo*0.001 + trans[1]
-        vector2[2]=vector1[2]*minimo*0.001
-        
-        pixel1 = Model_rgb.project3dToPixel(vector2)
-
-        vector12 = Model_depth.projectPixelTo3dRay((x2,y2)) #sobre imagen rect
-        vector22=[0,0,0]
-
-        vector22[0]=vector12[0]*minimo*0.001 + trans[0]
-        vector22[1]=vector12[1]*minimo*0.001 + trans[1]
-        vector22[2]=vector12[2]*minimo*0.001
-        
-        pixel2 = Model_rgb.project3dToPixel(vector22)
-        """
-
-
-        print(Model_depth.tfFrame())
-
-        #print (rot)
-
-
-        #print("hola")
-        #print(vector1)
-        cv2.rectangle(self.image,(int(pixel1[0]),int(pixel1[1])),(int(pixel1[0]+5),int(pixel1[1]+5)),(0,255,0),2)
-        cv2.rectangle(self.image,(int(pixel2[0]),int(pixel2[1])),(int(pixel2[0]+5),int(pixel2[1]+5)),(0,255,0),2)
-        
-        #mask=cv2.resize(mask,(cv_image.shape[1],cv_image.shape[0]),interpolation=cv2.INTER_LINEAR)
-        """
-
-        mask2=mask.copy()
-        mask2.fill(0)
-        mask2 = np.uint8(mask2)
-        mask2[mask>0.]=1
-        cv_image2=cv_image.copy()
-        #mask=cv2.erode(mask,kernel,iterations=3)
-        #cv2.bitwise_and(cv_image2,cv_image2,mask = mask2)
-        cv_image2[:,:,0]=mask2*cv_image2[:,:,0]
-        cv_image2[:,:,1]=mask2*cv_image2[:,:,1]
-        cv_image2[:,:,2]=mask2*cv_image2[:,:,2]
-        """
-        print(x,y,w,h)
-        cv2.rectangle(mask,(int(x),int(y)),(int(x+w),int(y+h)),(255,255,255),2)
-        """
-        cv_pub = self.bridge.cv2_to_imgmsg(self.image, "bgr8")
-        self.pub_rgb.publish(cv_pub)
-        cv_pub = self.bridge.cv2_to_imgmsg(mask, "passthrough")
-        self.pub_depth.publish(cv_pub)
-        
-        try:
-            crop_img = self.image[int(pixel1[1]):int(pixel2[1]),int(pixel1[0]):int(pixel2[0])]
-            cv_pub = self.bridge.cv2_to_imgmsg(crop_img, "bgr8")
-            self.pub_crop.publish(cv_pub)
-        except ZeroDivisionError as e:
-            print(e)    
-        """
         bbox=Rect()
         bbox.x=pixel1[1]
         bbox.y=pixel1[0]
@@ -187,9 +125,6 @@ class CoverDetectorServer:
 
         resp.bboxes.append(bbox)
         resp.labels.append("Cover")
-
-
-        #cv2.imwrite("holi2.jpg", cv_image2)
         
         return resp
         
