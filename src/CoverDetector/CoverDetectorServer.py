@@ -25,7 +25,7 @@ class CoverDetectorServer:
         rospy.loginfo("Detector created with name: ")
         self.bridge = CvBridge()
 
-        rospy.Service('/pose_detector/detect', DepthDetection, self.process_frame)
+        rospy.Service('/cover_detector/detect', DepthDetection, self.process_frame)
 
         """
         self.pub_rgb=rospy.Publisher("Disk",Image,queue_size=20)
@@ -99,7 +99,7 @@ class CoverDetectorServer:
         x2 = x+w
         y2 = y+h
 
-        """
+        
         vector1 = Model_depth.projectPixelTo3dRay((x,y)) #sobre imagen rect
         vector2=[0,0,0]
 
@@ -137,16 +137,16 @@ class CoverDetectorServer:
         vector22[2]=vector12[2]*minimo*0.001
         
         pixel2 = Model_rgb.project3dToPixel(vector22)
-
+        """
 
 
         print(Model_depth.tfFrame())
 
-        print (rot)
+        #print (rot)
 
 
-        print("hola")
-        print(vector1)
+        #print("hola")
+        #print(vector1)
         cv2.rectangle(self.image,(int(pixel1[0]),int(pixel1[1])),(int(pixel1[0]+5),int(pixel1[1]+5)),(0,255,0),2)
         cv2.rectangle(self.image,(int(pixel2[0]),int(pixel2[1])),(int(pixel2[0]+5),int(pixel2[1]+5)),(0,255,0),2)
         
@@ -166,18 +166,19 @@ class CoverDetectorServer:
         """
         print(x,y,w,h)
         cv2.rectangle(mask,(int(x),int(y)),(int(x+w),int(y+h)),(255,255,255),2)
-
+        """
         cv_pub = self.bridge.cv2_to_imgmsg(self.image, "bgr8")
         self.pub_rgb.publish(cv_pub)
         cv_pub = self.bridge.cv2_to_imgmsg(mask, "passthrough")
         self.pub_depth.publish(cv_pub)
+        
         try:
             crop_img = self.image[int(pixel1[1]):int(pixel2[1]),int(pixel1[0]):int(pixel2[0])]
             cv_pub = self.bridge.cv2_to_imgmsg(crop_img, "bgr8")
             self.pub_crop.publish(cv_pub)
         except ZeroDivisionError as e:
             print(e)    
-
+        """
         bbox=Rect()
         bbox.x=pixel1[1]
         bbox.y=pixel1[0]
