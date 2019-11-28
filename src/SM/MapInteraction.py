@@ -5,6 +5,7 @@ import smach
 from smach_ros import IntrospectionServer
 from uchile_srvs.srv import PersonDetection, PersonDetectionRequest
 from sensor_msgs.msg import Image
+from uchile_msgs.msg import SkeletonWeb
 
 from semu_skills import robot_factory
 from uchile_states.interaction.states import Speak
@@ -40,6 +41,7 @@ class Example(smach.State):
         self.audition=self.robot.get("audition")
         self.tts=self.robot.get("tts")
         self.img_pub = rospy.Publisher('/skeleton_image', Image, queue_size=1)
+        self.skeleton_pub = rospy.Publisher('/SkeletonWeb', SkeletonWeb, queue_size=1)
         self.bridge = CvBridge()
         self.Font= cv2.FONT_HERSHEY_SIMPLEX
         self.FontColor=(0, 0, 0) 
@@ -124,6 +126,10 @@ class Example(smach.State):
         blank_image = cv2.addWeighted(src1, 1, blank_image, 1, 0.0)
         return blank_image
 
+
+    def remap(self,x,in_min,in_max,out_min,out_max):
+        return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+
     def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 
         server_client = rospy.ServiceProxy('/pose_detector/detect', PersonDetection)
@@ -132,18 +138,20 @@ class Example(smach.State):
         self.tts.say("Ahora indique la alternativa seleccionada")
         #self.tts.wait_until_done()
 
-        #request.image = rospy.wait_for_message("/usb_cam/image_raw", Image)
-        request.image = rospy.wait_for_message("/maqui/camera/front/image_raw", Image)
+        request.image = rospy.wait_for_message("/usb_cam/image_raw", Image)
+        #request.image = rospy.wait_for_message("/maqui/camera/front/image_raw", Image)
         detections = server_client(request)
 
         print(detections)
         time_2=0
         self.InitialTime=rospy.get_rostime().secs
 
+        skeleton=SkeletonWeb()
+
         while time_2<10:
             
-            #request.image = rospy.wait_for_message("/usb_cam/image_raw", Image)
-            request.image = rospy.wait_for_message("/maqui/camera/front/image_raw", Image)
+            request.image = rospy.wait_for_message("/usb_cam/image_raw", Image)
+            #request.image = rospy.wait_for_message("/maqui/camera/front/image_raw", Image)
             detections = server_client(request)
             if len(detections.labels)>0:
                 cv_image=self.create_image()
@@ -161,13 +169,18 @@ class Example(smach.State):
                             cv2.circle(cv_image,(x,y), int(radius*2) , (0,0,0), 2)
                         elif j<=2:
                             cv2.circle(cv_image,(x,y), 12, (0,255,0), -1)
-                    elif j==10:
+                    elif j==9:
                         self.reset_time_by_zone(cv_image,x)
 
                         time_2=rospy.get_rostime().secs-self.InitialTime
                         cv2.putText(cv_image,str(time_2) , (x,y), self.Font, 1,  
              self.FontColor, 1, cv2.LINE_AA, False)
                         cv2.circle(cv_image,(x,y), 10, (0,0,255), -1)
+                        x_web=self.remap(x,0,640,0,1280)
+                        y_web=self.remap(y,0,480,0,800)
+                        skeleton.Hand=[x_web,y_web]
+                        skeleton.Zone=self.last_zone
+                        skeleton.Time=int(time_2)
 
 
                     elif j<11:
@@ -178,7 +191,8 @@ class Example(smach.State):
                 print(e)
             time_2=rospy.get_rostime().secs-self.InitialTime
 
-
+            self.skeleton_pub.publish(skeleton)
+            rospy.loginfo(skeleton)
             self.img_pub.publish(ros_image)
 
         self.tts.say("Zona seleccionada {}".format(self.ZonesNames[self.last_zone]))
