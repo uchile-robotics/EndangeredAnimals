@@ -4,17 +4,18 @@ import smach
 import random
 from smach_ros import IntrospectionServer
 
-from maqui_skills import robot_factory
+from semu_skills import robot_factory
 import MapInteraction
 import CoverDetector
 import HearInfo
 from uchile_states.interaction.states import Speak
+from uchile_msgs.msg import AnimalCard
 
 
 
 class Setup(smach.State):
 	def __init__(self,robot):
-		smach.State.__init__(self,outcomes=["succeeded","aborted"],output_keys=["kid_name"]) # Aca se ponen todas las salidas que pueden tener este estado
+		smach.State.__init__(self,outcomes=["succeeded","aborted"],output_keys=["kid_name"],io_keys=["animal_info"]) # Aca se ponen todas las salidas que pueden tener este estado
 		self.robot = robot
 		self.audition = self.robot.get("audition")
 		self.tts = self.robot.get("tts")
@@ -24,6 +25,7 @@ class Setup(smach.State):
 		self.tts.set_language("Spanish")
 		self.tts.say("Hola, esto es animales en extincion")
 		userdata.kid_name = "TEST"
+		userdata.animal_info={"Name":"","Location":"","Cantidad":0,"Data_random":"","Child_name":"","Image":""}
 		#return "preemted" 
 		#OJO esto genera un error debido a que en los outcomes definidos de las clase no se tiene el preemted , recomiendo ejecutar para ver el error
 		return "succeeded"
@@ -86,6 +88,28 @@ class AskQuestions(smach.State):
 		return "succeeded"
 
 
+class InformationSaver(smach.State):
+	def __init__(self,robot):
+		smach.State.__init__(self,outcomes=["succeeded"],io_keys=["animal_info"])
+		self.robot=robot
+		self.animal_info_pub = rospy.Publisher('/animal_file',AnimalCard , queue_size=1)
+		rospy.sleep(2)
+
+	def execute(self,userdata):
+		msg=AnimalCard()
+		msg.name=userdata.animal_info["Name"]
+		msg.location=userdata.animal_info["Location"]
+		msg.left_species=userdata.animal_info["Cantidad"]
+		msg.pic=userdata.animal_info["Image"]
+		msg.extra_info=userdata.animal_info["Data_random"]
+		msg.author=userdata.animal_info["Child_name"]
+		rospy.sleep(2)
+		self.animal_info_pub.publish(msg)
+		rospy.sleep(2)
+		rospy.loginfo(msg)
+		return "succeeded"
+
+
 
 
 def getInstance(robot):
@@ -118,10 +142,14 @@ def getInstance(robot):
 		)
 		smach.StateMachine.add('HEAR_INFO',HearInfo.getInstance(robot),
 			transitions={
-				'succeeded':'ITERATORMANAGER',
+				'succeeded':'INFORMATION_SAVER',
 				'aborted':'ITERATORMANAGER'
 			}
 		)
+		smach.StateMachine.add('INFORMATION_SAVER',InformationSaver(robot),
+			transitions={
+				'succeeded':'ITERATORMANAGER'
+			})
 		smach.StateMachine.add('COVER_DETECTOR',CoverDetector.getInstance(robot),
 			transitions={
 				'succeeded':'ITERATORMANAGER'

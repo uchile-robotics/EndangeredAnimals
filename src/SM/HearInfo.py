@@ -30,7 +30,7 @@ class Iterator(smach.State):
 
 class AddInfo(smach.State):
 	def __init__(self,robot):
-		smach.State.__init__(self,outcomes=["succeeded"],input_keys=["recognized_sentence","actual_question"])
+		smach.State.__init__(self,outcomes=["succeeded"],input_keys=["recognized_sentence","actual_question"],io_keys=['animal_info'])
 		self.robot=robot
 
 	def execute(self,userdata):
@@ -39,11 +39,12 @@ class AddInfo(smach.State):
 		Speak(self.robot,"Hola Escuche {}".format(userdata.recognized_sentence))
 		tts=self.robot.get("tts")
 		tts.say("Hola Escuche {}".format(userdata.recognized_sentence))
+		userdata.animal_info[userdata.actual_question[0]]=userdata.recognized_sentence
 		return "succeeded"
 
 
 def getInstance(robot):
-	sm =smach.StateMachine(outcomes=['succeeded','aborted','preempted'],input_keys=["actual_question"])
+	sm =smach.StateMachine(outcomes=['succeeded','aborted','preempted'],input_keys=["actual_question","animal_info"],output_keys=['animal_info'])
 
 
 	with sm:
