@@ -99,7 +99,7 @@ class InformationSaver(smach.State):
 		msg=AnimalCard()
 		msg.name=userdata.animal_info["Name"]
 		msg.location=userdata.animal_info["Location"]
-		msg.left_species=userdata.animal_info["Cantidad"]
+		msg.left_species=int(userdata.animal_info["Cantidad"])
 		msg.pic=userdata.animal_info["Image"]
 		msg.extra_info=userdata.animal_info["Data_random"]
 		msg.author=userdata.animal_info["Child_name"]
