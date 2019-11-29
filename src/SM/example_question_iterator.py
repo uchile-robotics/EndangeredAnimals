@@ -110,6 +110,20 @@ class InformationSaver(smach.State):
 		return "succeeded"
 
 
+class Resume(smach.State):
+	def __init__(self,robot):
+		smach.State.__init__(self,outcomes=["succeeded"],input_keys=["animal_info"])
+		self.robot=robot
+		self.tts=self.robot.get("tts")
+
+	def execute(self,userdata):
+		self.tts.say("Aprendi lo siguiente {} tambien {} tambien {} tambien {} tambien{}".format(userdata.animal_info["Name"],
+			userdata.animal_info["Location"],userdata.animal_info["Cantidad"],
+			userdata.animal_info["Data_random"],userdata.animal_info["Child_name"]))
+		self.tts.wait_until_done()
+
+		return "succeeded"
+
 
 
 def getInstance(robot):
@@ -124,7 +138,7 @@ def getInstance(robot):
 		)
 		smach.StateMachine.add('ITERATORMANAGER',IteratorManager(robot),
 			transitions={
-				'succeeded':'succeeded',
+				'succeeded':'RESUME',
 				'preempted':'ASKQUESTIONS'
 			}
 		)
@@ -155,6 +169,10 @@ def getInstance(robot):
 				'succeeded':'ITERATORMANAGER'
 			}
 		)
+		smach.StateMachine.add('RESUME',Resume(robot),
+			transitions={
+				'succeeded':'succeeded'
+			})
 	return sm
 
 
