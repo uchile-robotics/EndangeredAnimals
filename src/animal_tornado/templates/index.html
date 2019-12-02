@@ -9,10 +9,11 @@
     <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
+     <input id="starto" type="button" name="start" value="Empieza!" onclick="ws_connect()" style="font-size : 90px">
     <div class="animal_pic">
         <img id="foto" src="../static/img/animals/none.jpg">
     </div>
-    <form onsubmit="return false;">
+    <form onsubmit="return false;">       
         <label for="nombre">Nombre</label><br>
         <input id="nombre" type="text" name="nombre"><br><br>
         <label for="locacion">Ubicación</label><br>
@@ -24,7 +25,7 @@
         <label for="autor">Esto me lo enseñó </label>
         <input id="autor" type="text" name="autor"><br><br>
         <input type="button" name="submit" value="Enviar!" onclick="info_publisher()">
-        <input id="starto" type="button" name="start" value="Empieza!" onclick="ws_connect()">
+        
     </form>
 </body>
 </html>
