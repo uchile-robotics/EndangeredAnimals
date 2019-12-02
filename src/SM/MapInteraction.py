@@ -535,7 +535,7 @@ class RegionSelector(smach.State):
                         x_web=self.remap(x,0,640,0,1280)
                         y_web=self.remap(y,0,480,0,800)
                         skeleton.Hand=[x_web,y_web]
-                        skeleton.Zone=self.last_zone+3+userdata.animal_region*5
+                        skeleton.Zone=self.last_zone+4+userdata.animal_region*5
                         skeleton.Time=int(time_2)
                         rospy.loginfo(skeleton)
 

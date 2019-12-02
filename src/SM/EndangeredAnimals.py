@@ -29,8 +29,9 @@ class Setup(smach.State):
 		self.tts.say("Hola, esto es animales en extincion")
 		self.tts.wait_until_done()
 		userdata.kid_name = "TEST"
-		userdata.animal_info={"Name":"","Location":"","Cantidad":0,"Data_random":"","Child_name":"","Image":""}
+		userdata.animal_info={"Name":"","Location":"","Cantidad":"","Data_random":"","Child_name":"","Image":"../static/img/animals/none.jpg"}
 		msg=AnimalCard()
+		msg.pic=userdata.animal_info["Image"]
 		rospy.sleep(2)
 		rospy.loginfo(msg)
 		rospy.sleep(2)
@@ -109,7 +110,7 @@ class InformationSaver(smach.State):
 		msg=AnimalCard()
 		msg.name=userdata.animal_info["Name"]
 		msg.location=userdata.animal_info["Location"]
-		#msg.left_species=userdata.animal_info["Cantidad"]
+		msg.left_species=userdata.animal_info["Cantidad"]
 		msg.pic=userdata.animal_info["Image"]
 		msg.extra_info=userdata.animal_info["Data_random"]
 		msg.author=userdata.animal_info["Child_name"]
@@ -143,9 +144,13 @@ def getInstance(robot):
 	with sm:
 		smach.StateMachine.add('SETUP',Setup(robot),
 			transitions={
-				'succeeded':'SHOW_LAMINA'
+				'succeeded':'SETUP2'
 			}
 		)
+		smach.StateMachine.add('SETUP2',Speak(robot,text="Hola chavales como estan",gestures=True),
+			transitions={
+				'succeeded':'SHOW_LAMINA'
+			})
 		smach.StateMachine.add('SHOW_LAMINA',ShowWebpage(robot,page="http://198.18.0.1:8888/"),
 			transitions={
 				'succeeded':'WAIT_TOUCH_SCREEN',
