@@ -1,0 +1,18 @@
+.za_hando {
+	position:absolute;
+}
+
+.za_hando img {
+	width:200px;
+}
+
+#mapa {
+	background:#000;
+	position:absolute;
+	width:1280px;
+	height:800px;
+}
+
+#starto {
+	position:absolute;
+}

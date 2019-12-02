@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Endangered Animals</title>
+    <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <script type="text/javascript" src="../static/js/rostopic_listener.js"></script>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+    <div class="animal_pic">
+        <img id="foto" src="../static/img/animals/none.jpg">
+    </div>
+    <form onsubmit="return false;">
+        <label for="nombre">Nombre</label><br>
+        <input id="nombre" type="text" name="nombre"><br><br>
+        <label for="locacion">Ubicación</label><br>
+        <input id="locacion" type="text" name="locacion"><br><br>
+        <label for="restantes">Especies Restantes</label><br>
+        <input id="restantes" type="text" name="restantes"><br><br>
+        <label for="datos_extra">Datos Extra</label><br>
+        <input id="datos_extra" type="text" name="datos_extra"><br><br>
+        <label for="autor">Esto me lo enseñó </label>
+        <input id="autor" type="text" name="autor"><br><br>
+        <input type="button" name="submit" value="Enviar!" onclick="info_publisher()">
+        <input id="starto" type="button" name="start" value="Empieza!" onclick="ws_connect()">
+    </form>
+</body>
+</html>
