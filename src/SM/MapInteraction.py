@@ -536,8 +536,12 @@ class RegionSelector(smach.State):
                         y_web=self.remap(y,0,480,0,800)
                         skeleton.Hand=[x_web,y_web]
                         skeleton.Zone=self.last_zone+4+userdata.animal_region*5
-                        skeleton.Time=int(time_2)
+                        skeleton.Time=int(time_2)*2
                         rospy.loginfo(skeleton)
+                        self.skeleton_pub.publish(skeleton)
+                        time.wait(0.5)
+                        skeleton.Time=int(time_2)*2+1
+                        self.skeleton_pub.publish(skeleton)
 
 
                     elif j<11:
@@ -548,7 +552,7 @@ class RegionSelector(smach.State):
                 print(e)
             time_2=rospy.get_rostime().secs-self.InitialTime
 
-            self.skeleton_pub.publish(skeleton)
+            
             #rospy.loginfo(skeleton)
             self.img_pub.publish(ros_image)
 
