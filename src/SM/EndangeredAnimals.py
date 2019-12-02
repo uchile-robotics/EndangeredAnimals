@@ -10,6 +10,7 @@ import CoverDetector
 import HearInfo
 from uchile_states.interaction.states import Speak
 from uchile_msgs.msg import AnimalCard
+from uchile_states.interaction.tablet_states import ShowWebpage, WaitTouchScreen
 
 
 
@@ -108,7 +109,7 @@ class InformationSaver(smach.State):
 		msg=AnimalCard()
 		msg.name=userdata.animal_info["Name"]
 		msg.location=userdata.animal_info["Location"]
-		msg.left_species=userdata.animal_info["Cantidad"]
+		#msg.left_species=userdata.animal_info["Cantidad"]
 		msg.pic=userdata.animal_info["Image"]
 		msg.extra_info=userdata.animal_info["Data_random"]
 		msg.author=userdata.animal_info["Child_name"]
@@ -142,9 +143,18 @@ def getInstance(robot):
 	with sm:
 		smach.StateMachine.add('SETUP',Setup(robot),
 			transitions={
-				'succeeded':'ITERATORMANAGER'
+				'succeeded':'SHOW_LAMINA'
 			}
 		)
+		smach.StateMachine.add('SHOW_LAMINA',ShowWebpage(robot,page="http://198.18.0.1:8888/"),
+			transitions={
+				'succeeded':'WAIT_TOUCH_SCREEN',
+				'preempted':'SHOW_LAMINA'
+			})
+		smach.StateMachine.add('WAIT_TOUCH_SCREEN',WaitTouchScreen(robot),
+			transitions={
+			'succeeded':'ITERATORMANAGER'
+			})
 		smach.StateMachine.add('ITERATORMANAGER',IteratorManager(robot),
 			transitions={
 				'succeeded':'RESUME',
@@ -154,15 +164,29 @@ def getInstance(robot):
 		smach.StateMachine.add('ASKQUESTIONS',AskQuestions(robot),
 			transitions={
 				'succeeded':'HEAR_INFO',
-				'map_game':'MAP_GAME',
+				'map_game':'LOAD_MAP',
 				'cover_detector':'COVER_DETECTOR'
 			}
 		)
+		smach.StateMachine.add('LOAD_MAP',ShowWebpage(robot,page="http://198.18.0.1:8888/map"),
+			transitions={
+				'succeeded':'MAP_GAME',
+				'preempted':'LOAD_MAP'
+			})
 		smach.StateMachine.add('MAP_GAME',MapInteraction.getInstance(robot),
 			transitions={
-				'succeeded':'INFORMATION_SAVER'
+				'succeeded':'SHOW_LAMINA2'
 			}
 		)
+		smach.StateMachine.add('SHOW_LAMINA2',ShowWebpage(robot,page="http://198.18.0.1:8888/"),
+			transitions={
+				'succeeded':'WAIT_TOUCH_SCREEN2',
+				'preempted':'SHOW_LAMINA2'
+			})
+		smach.StateMachine.add('WAIT_TOUCH_SCREEN2',WaitTouchScreen(robot),
+			transitions={
+			'succeeded':'INFORMATION_SAVER'
+			})
 		smach.StateMachine.add('HEAR_INFO',HearInfo.getInstance(robot),
 			transitions={
 				'succeeded':'INFORMATION_SAVER',

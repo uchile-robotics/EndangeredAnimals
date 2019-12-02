@@ -9,6 +9,7 @@ from uchile_msgs.msg import SkeletonWeb
 
 from semu_skills import robot_factory
 from uchile_states.interaction.states import Speak
+from uchile_states.interaction.tablet_states import WaitTouchScreen
 
 from cv_bridge import CvBridge, CvBridgeError
 import cv2 
@@ -564,11 +565,16 @@ class RegionSelector(smach.State):
 
 
 def getInstance(robot):
-    sm =smach.StateMachine(outcomes=['succeeded','aborted'],output_keys=['animal_region'],input_keys=['animal_info'])
+    sm =smach.StateMachine(outcomes=['succeeded','aborted','preempted'],output_keys=['animal_region'],input_keys=['animal_info'])
 
 
     with sm:
         smach.StateMachine.add('SETUP',Setup(robot),
+            transitions={
+                'succeeded':'SETUP2'
+            }
+        )
+        smach.StateMachine.add('SETUP2',WaitTouchScreen(robot),
             transitions={
                 'succeeded':'INSTRUCTIONS'
             }
@@ -578,6 +584,7 @@ def getInstance(robot):
                 'succeeded':'GET_ZONE'
             }
         )
+
         smach.StateMachine.add('GET_ZONE',Example(robot),
             transitions={
                 'succeeded':'GET_REGION'
