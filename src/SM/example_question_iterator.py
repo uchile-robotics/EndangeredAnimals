@@ -4,7 +4,7 @@ import smach
 import random
 from smach_ros import IntrospectionServer
 
-from semu_skills import robot_factory
+from maqui_skills import robot_factory
 import MapInteraction
 import CoverDetector
 import HearInfo
@@ -19,13 +19,22 @@ class Setup(smach.State):
 		self.robot = robot
 		self.audition = self.robot.get("audition")
 		self.tts = self.robot.get("tts")
+		self.animal_info_pub = rospy.Publisher('/animal_file',AnimalCard , queue_size=1)
+		
 		#self.skill=self.robot.get("skill")
 
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
 		self.tts.say("Hola, esto es animales en extincion")
+		self.tts.wait_until_done()
 		userdata.kid_name = "TEST"
 		userdata.animal_info={"Name":"","Location":"","Cantidad":0,"Data_random":"","Child_name":"","Image":""}
+		msg=AnimalCard()
+		rospy.sleep(2)
+		rospy.loginfo(msg)
+		rospy.sleep(2)
+		self.animal_info_pub.publish(msg)
+
 		#return "preemted" 
 		#OJO esto genera un error debido a que en los outcomes definidos de las clase no se tiene el preemted , recomiendo ejecutar para ver el error
 		return "succeeded"
@@ -99,7 +108,7 @@ class InformationSaver(smach.State):
 		msg=AnimalCard()
 		msg.name=userdata.animal_info["Name"]
 		msg.location=userdata.animal_info["Location"]
-		msg.left_species=int(userdata.animal_info["Cantidad"])
+		msg.left_species=userdata.animal_info["Cantidad"]
 		msg.pic=userdata.animal_info["Image"]
 		msg.extra_info=userdata.animal_info["Data_random"]
 		msg.author=userdata.animal_info["Child_name"]
@@ -151,7 +160,7 @@ def getInstance(robot):
 		)
 		smach.StateMachine.add('MAP_GAME',MapInteraction.getInstance(robot),
 			transitions={
-				'succeeded':'ITERATORMANAGER'
+				'succeeded':'INFORMATION_SAVER'
 			}
 		)
 		smach.StateMachine.add('HEAR_INFO',HearInfo.getInstance(robot),
