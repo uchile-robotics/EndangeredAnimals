@@ -13,6 +13,10 @@
 	height:800px;
 }
 
+
 #starto {
-	position:absolute;
+	background-color: black;
+	color: white;
+	width:1280px;
+	height:800px;
 }
