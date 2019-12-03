@@ -204,7 +204,7 @@ def getInstance(robot):
 			})
 		smach.StateMachine.add('COVER_DETECTOR',CoverDetector.getInstance(robot),
 			transitions={
-				'succeeded':'ITERATORMANAGER'
+				'succeeded':'SHOW_LAMINA2'
 			}
 		)
 		smach.StateMachine.add('RESUME',Resume(robot),
