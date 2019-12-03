@@ -26,8 +26,8 @@ class Setup(smach.State):
 
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
-		self.tts.say("Hola, esto es animales en extincion")
-		self.tts.wait_until_done()
+		# self.tts.say("Hola, te doy la bienvenida al proyecto animales en peligro de extincion. Para comenzar, les dare una serie de instrucciones. Debes hablarme fuerte y claro cuando mis ojos esten azules. Para comenzar, debes tocar la pantalla")
+		# self.tts.wait_until_done()
 		userdata.kid_name = "TEST"
 		userdata.animal_info={"Name":"","Location":"","Cantidad":"","Data_random":"","Child_name":"","Image":"../static/img/animals/none.jpg"}
 		msg=AnimalCard()
@@ -44,12 +44,12 @@ class Setup(smach.State):
 def GetQuestion(keyword):
 	#Cada una de estas listas son las 4 variantes para el tipo de preguntas para la misma info
 	#NOMBRE;HABITAT en Chile;ESPECIMENES RESTANTES; DATOS; FOTO; QUIEN ME ENSENO
-	lista1 = ["Como se llama?","De que animal me estas hablando?","Este animal tiene algun nombre?","Puedes decirme su nombre?"]
-	lista2 = ["Donde se encuentra?","Cual es su distribucion?","En que zona de Chile vive?","En que lugares habita"]
+	lista1 = ["Como se llama el animal?","De que animal me estas hablando?","Este animal tiene algun nombre?","Puedes decirme el nombre del animal?"]
+	lista2 = ["Donde se encuentra ubicado?","Cual es su distribucion?","En que zona de Chile vive?","En que lugares de chile habita?"]
 	lista3 = ["Cuantos especimenes quedan?","Cuantos hay actualmente?","Tienes algun numero de especimenes restantes?","Hay algun numero estimado de especies restantes?"]
 	lista4 = ["Por que esta en peligro?" ,"Por que esta desapareciendo?","Que esta causando su disminucion?","Que esta motivando su desaparicion?", "Que motivos pone en peligro a este animal?"]
-	lista5 = ["Como luce?","Me puedes mostrar una imaagen","Tienes alguna foto para mostrar?","me puedes mostrar  una foto del animaal?"]
-	lista6 = ["Como te llamas?", "Cual es tu nombre?", "Me podrias decir tu nombre?", "Quien eres?"]
+	lista5 = ["Como luce este animal?","Me puedes mostrar una imaagen del animal?","Tienes alguna foto para mostrar?","me puedes mostrar  una foto del animaal?"]
+	lista6 = ["Como te llamas?", "Cual es tu nombre?", "Me podrias decir tu nombre?", "Puedes darme tu nombre?"]
 
 
 
@@ -128,7 +128,8 @@ class Resume(smach.State):
 		self.tts=self.robot.get("tts")
 
 	def execute(self,userdata):
-		self.tts.say("Aprendi lo siguiente {} tambien {} tambien {} tambien {} tambien{}".format(userdata.animal_info["Name"],
+		self.tts.say("Segun lo que aprendi, este animal llamado {}. vive en {}, donde quedan aproximadamente {}. Presenta amenazas como {}, que estan provocando su desaparicion. Todo esto lo pude aprender gracias al grupo de {}".format(
+			userdata.animal_info["Name"],
 			userdata.animal_info["Location"],userdata.animal_info["Cantidad"],
 			userdata.animal_info["Data_random"],userdata.animal_info["Child_name"]))
 		self.tts.wait_until_done()
@@ -147,7 +148,7 @@ def getInstance(robot):
 				'succeeded':'SETUP2'
 			}
 		)
-		smach.StateMachine.add('SETUP2',Speak(robot,text="Hola chavales como estan",gestures=True),
+		smach.StateMachine.add('SETUP2',Speak(robot,text="Hola, te doy la bienvenida al proyecto animales en peligro de extincion. Para comenzar, les dare una serie de instrucciones. Deben hablarme fuerte y claro cuando mis ojos esten azules. Para comenzar, debes tocar la pantalla",gestures=True),
 			transitions={
 				'succeeded':'SHOW_LAMINA'
 			})
@@ -204,7 +205,7 @@ def getInstance(robot):
 			})
 		smach.StateMachine.add('COVER_DETECTOR',CoverDetector.getInstance(robot),
 			transitions={
-				'succeeded':'ITERATORMANAGER'
+				'succeeded':'SHOW_LAMINA2'
 			}
 		)
 		smach.StateMachine.add('RESUME',Resume(robot),

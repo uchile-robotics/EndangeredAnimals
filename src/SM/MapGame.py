@@ -20,7 +20,7 @@ class Setup(smach.State):
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
 		#self.tts.say("Setup juego del mapa")
-		self.tts.say("Podrias seleccionar una parte de Chile donde se encuentra el animal?")
+		# self.tts.say("Podrias seleccionar una parte de Chile donde se encuentra el animal?")
 		self.robot.tts.wait_until_done()
 		rospy.sleep(10)
 
