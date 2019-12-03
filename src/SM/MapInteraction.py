@@ -184,7 +184,7 @@ class Instrucctions(smach.State):
                         x_web=self.remap(x,0,640,0,1280)
                         y_web=self.remap(y,0,480,0,800)
                         skeleton.Hand=[x_web,y_web]
-                        skeleton.Zone=3
+                        skeleton.Zone=18
                         skeleton.Time=int(time_2)
 
 
