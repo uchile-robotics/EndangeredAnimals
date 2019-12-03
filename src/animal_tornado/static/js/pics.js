@@ -1,6 +1,11 @@
 // Connecting to ROS
 // -----------------
 function ws_connect(){
+var bg = document.getElementById("alpha")
+var button = document.getElementById("starto");
+button.style.display = "none";
+bg.style.display = "none";
+	
 var ros = new ROSLIB.Ros({
   url : 'ws://localhost:9090'
 });
@@ -37,13 +42,6 @@ animal_file.subscribe(function(message) {
   document.getElementById("za_hando").style.top = ypos+"px";
   var img = document.getElementById("hando");
   img.src = "../static/img/hand/"+t+".png";
-  var mapita = document.getElementById("mapa");
-  mapita.src = "../static/img/map/"+zone+".png";
 });
-
-var bg = document.getElementById("alpha")
-var button = document.getElementById("starto");
-button.style.display = "none";
-bg.style.display = "none";
 
 }

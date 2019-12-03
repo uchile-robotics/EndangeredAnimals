@@ -1,0 +1,64 @@
+* {
+	margin:0px;
+}
+
+.btn {
+	position:absolute;
+	border:none;
+    outline:none;
+    background-color:#fff;
+}
+
+.image {
+	width:250px;
+	height:250px;
+}
+
+#btn_1 {
+	left:370px;
+	top:138px;
+}
+
+#btn_2 {
+	left:660px;
+	top:138px;
+}
+
+#btn_3 {
+	left:370px;
+	top:412px;
+}
+
+#btn_4 {
+	left:660px;
+	top:412px;
+}
+
+.za_hando {
+	position:absolute;
+}
+
+.za_hando img {
+	width:200px;
+}
+
+#starto {
+	position:absolute;
+	border:none;
+    outline:none;
+    background-color:#fff;
+    left:490px;
+    top:363px;
+}
+
+.alpha {
+	position:absolute;
+	margin:0px;
+	width:1280px;
+	height:800px;
+	opacity:0.7;
+}
+
+.start_img {
+	width:300px;
+}

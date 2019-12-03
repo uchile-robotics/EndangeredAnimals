@@ -90,7 +90,7 @@ class CoverDetector(smach.State):
 
 		crop_image=cv_image[x:x+w,y:y+h]
 
-		cv2.imwrite("holi{}.jpg".format(self.it),crop_image)
+		cv2.imwrite("../animal_tornado/static/tmp/{}.jpg".format(self.it),crop_image)
 
 		if self.it<self.max:
 			self.it+=1
