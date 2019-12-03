@@ -33,7 +33,7 @@ class Setup(smach.State):
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
 		#self.tts.say("Setup detector de CARATULAS")
-		self.tts.say("Me gustaria guardar una imagen del animal para la ficha, puedes mostrarme una?")
+		self.tts.say("Me gustaria guardar una imagen del animal para la ficha")
 		self.robot.tts.wait_until_done()
 		rospy.sleep(10)
 
@@ -146,7 +146,10 @@ class Selector(smach.State):
 
 		server_client = rospy.ServiceProxy('/pose_detector/detect', PersonDetection)
 		request = PersonDetectionRequest()
-		self.tts.say("Ahora debemos seleccionar cual de las fotos quedarse")
+
+		self.tts.set_language("Spanish")
+		#self.tts.say("Setup detector de CARATULAS")
+		self.tts.say("Ahora deben seleccionar con cual de las fotos quedarse")
 		self.robot.tts.wait_until_done()
 		self.tts.say("Porfavor mueve tu mano derecha para seleccionar la foto donde el animal se vea mejor")
 		#self.tts.wait_until_done()
