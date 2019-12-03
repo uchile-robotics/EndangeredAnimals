@@ -62,3 +62,10 @@
 .start_img {
 	width:300px;
 }
+
+.backg {
+	position:absolute;
+	margin:0px;
+	width:1280px;
+	height:800px;
+}
