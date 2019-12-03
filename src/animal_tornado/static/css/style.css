@@ -28,3 +28,10 @@ body{
 	height:300px;
 	float:left;
 }
+
+#starto {
+	background-color: black;
+	color: white;
+	width:1280px;
+	height:800px;
+}

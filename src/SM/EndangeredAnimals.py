@@ -10,6 +10,7 @@ import CoverDetector
 import HearInfo
 from uchile_states.interaction.states import Speak
 from uchile_msgs.msg import AnimalCard
+from uchile_states.interaction.tablet_states import ShowWebpage, WaitTouchScreen
 
 
 
@@ -28,8 +29,9 @@ class Setup(smach.State):
 		self.tts.say("Hola, esto es animales en extincion")
 		self.tts.wait_until_done()
 		userdata.kid_name = "TEST"
-		userdata.animal_info={"Name":"","Location":"","Cantidad":0,"Data_random":"","Child_name":"","Image":""}
+		userdata.animal_info={"Name":"","Location":"","Cantidad":"","Data_random":"","Child_name":"","Image":"../static/img/animals/none.jpg"}
 		msg=AnimalCard()
+		msg.pic=userdata.animal_info["Image"]
 		rospy.sleep(2)
 		rospy.loginfo(msg)
 		rospy.sleep(2)
@@ -142,9 +144,22 @@ def getInstance(robot):
 	with sm:
 		smach.StateMachine.add('SETUP',Setup(robot),
 			transitions={
-				'succeeded':'ITERATORMANAGER'
+				'succeeded':'SETUP2'
 			}
 		)
+		smach.StateMachine.add('SETUP2',Speak(robot,text="Hola chavales como estan",gestures=True),
+			transitions={
+				'succeeded':'SHOW_LAMINA'
+			})
+		smach.StateMachine.add('SHOW_LAMINA',ShowWebpage(robot,page="http://198.18.0.1:8888/"),
+			transitions={
+				'succeeded':'WAIT_TOUCH_SCREEN',
+				'preempted':'SHOW_LAMINA'
+			})
+		smach.StateMachine.add('WAIT_TOUCH_SCREEN',WaitTouchScreen(robot),
+			transitions={
+			'succeeded':'ITERATORMANAGER'
+			})
 		smach.StateMachine.add('ITERATORMANAGER',IteratorManager(robot),
 			transitions={
 				'succeeded':'RESUME',
@@ -154,15 +169,29 @@ def getInstance(robot):
 		smach.StateMachine.add('ASKQUESTIONS',AskQuestions(robot),
 			transitions={
 				'succeeded':'HEAR_INFO',
-				'map_game':'MAP_GAME',
+				'map_game':'LOAD_MAP',
 				'cover_detector':'COVER_DETECTOR'
 			}
 		)
+		smach.StateMachine.add('LOAD_MAP',ShowWebpage(robot,page="http://198.18.0.1:8888/map"),
+			transitions={
+				'succeeded':'MAP_GAME',
+				'preempted':'LOAD_MAP'
+			})
 		smach.StateMachine.add('MAP_GAME',MapInteraction.getInstance(robot),
 			transitions={
-				'succeeded':'INFORMATION_SAVER'
+				'succeeded':'SHOW_LAMINA2'
 			}
 		)
+		smach.StateMachine.add('SHOW_LAMINA2',ShowWebpage(robot,page="http://198.18.0.1:8888/"),
+			transitions={
+				'succeeded':'WAIT_TOUCH_SCREEN2',
+				'preempted':'SHOW_LAMINA2'
+			})
+		smach.StateMachine.add('WAIT_TOUCH_SCREEN2',WaitTouchScreen(robot),
+			transitions={
+			'succeeded':'INFORMATION_SAVER'
+			})
 		smach.StateMachine.add('HEAR_INFO',HearInfo.getInstance(robot),
 			transitions={
 				'succeeded':'INFORMATION_SAVER',

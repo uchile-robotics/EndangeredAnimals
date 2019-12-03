@@ -9,6 +9,7 @@ from uchile_msgs.msg import SkeletonWeb
 
 from semu_skills import robot_factory
 from uchile_states.interaction.states import Speak
+from uchile_states.interaction.tablet_states import WaitTouchScreen
 
 from cv_bridge import CvBridge, CvBridgeError
 import cv2 
@@ -534,9 +535,13 @@ class RegionSelector(smach.State):
                         x_web=self.remap(x,0,640,0,1280)
                         y_web=self.remap(y,0,480,0,800)
                         skeleton.Hand=[x_web,y_web]
-                        skeleton.Zone=self.last_zone+3+userdata.animal_region*5
-                        skeleton.Time=int(time_2)
+                        skeleton.Zone=self.last_zone+4+userdata.animal_region*5
+                        skeleton.Time=int(time_2)*2
                         rospy.loginfo(skeleton)
+                        self.skeleton_pub.publish(skeleton)
+                        time.wait(0.5)
+                        skeleton.Time=int(time_2)*2+1
+                        self.skeleton_pub.publish(skeleton)
 
 
                     elif j<11:
@@ -547,7 +552,7 @@ class RegionSelector(smach.State):
                 print(e)
             time_2=rospy.get_rostime().secs-self.InitialTime
 
-            self.skeleton_pub.publish(skeleton)
+            
             #rospy.loginfo(skeleton)
             self.img_pub.publish(ros_image)
 
@@ -564,11 +569,16 @@ class RegionSelector(smach.State):
 
 
 def getInstance(robot):
-    sm =smach.StateMachine(outcomes=['succeeded','aborted'],output_keys=['animal_region'],input_keys=['animal_info'])
+    sm =smach.StateMachine(outcomes=['succeeded','aborted','preempted'],output_keys=['animal_region'],input_keys=['animal_info'])
 
 
     with sm:
         smach.StateMachine.add('SETUP',Setup(robot),
+            transitions={
+                'succeeded':'SETUP2'
+            }
+        )
+        smach.StateMachine.add('SETUP2',WaitTouchScreen(robot),
             transitions={
                 'succeeded':'INSTRUCTIONS'
             }
@@ -578,6 +588,7 @@ def getInstance(robot):
                 'succeeded':'GET_ZONE'
             }
         )
+
         smach.StateMachine.add('GET_ZONE',Example(robot),
             transitions={
                 'succeeded':'GET_REGION'
