@@ -1,0 +1,35 @@
+* {
+	margin:0px;
+}
+
+.btn {
+	position:absolute;
+	border:none;
+    outline:none;
+    background-color:#fff;
+}
+
+.image {
+	width:250px;
+	height:250px;
+}
+
+#btn_1 {
+	left:370px;
+	top:138px;
+}
+
+#btn_2 {
+	left:660px;
+	top:138px;
+}
+
+#btn_3 {
+	left:370px;
+	top:412px;
+}
+
+#btn_4 {
+	left:660px;
+	top:412px;
+}

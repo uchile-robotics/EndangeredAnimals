@@ -67,8 +67,9 @@ animal_file.subscribe(function(message) {
   var img = document.getElementById("foto");
   img.src = message.pic;
 });
-
+var bg = document.getElementById("alpha")
 var button = document.getElementById("starto");
 button.style.display = "none";
+bg.style.display = "none";
 
 }
