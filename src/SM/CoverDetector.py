@@ -26,7 +26,7 @@ class Setup(smach.State):
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
 		#self.tts.say("Setup detector de CARATULAS")
-		self.tts.say("Me gustaria guardar una imagen del animal para la ficha, puedes mostrarme una?")
+		self.tts.say("Me gustaria guardar una imagen del animal para la ficha")
 		self.robot.tts.wait_until_done()
 		rospy.sleep(10)
 
@@ -46,7 +46,7 @@ class Selector(smach.State):
 	def execute(self,userdata): # Userdata es informacion que se puede mover entre estados
 		self.tts.set_language("Spanish")
 		#self.tts.say("Setup detector de CARATULAS")
-		self.tts.say("Ahora debemos seleccionar cual de las fotos quedarse")
+		self.tts.say("Ahora deben seleccionar con cual de las fotos quedarse")
 		self.robot.tts.wait_until_done()
 		rospy.sleep(10)
 

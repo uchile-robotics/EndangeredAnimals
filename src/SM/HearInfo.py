@@ -24,6 +24,7 @@ class Iterator(smach.State):
 			self.it+=1
 			return "preempted"
 		else:
+			self.tts.say("Oh, lo siento no te escuche bien, pasemos a la siguiente fase?")
 			rospy.loginfo("Demasiados intentos")
 			return "aborted"
 
