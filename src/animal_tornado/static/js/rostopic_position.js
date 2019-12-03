@@ -41,7 +41,9 @@ animal_file.subscribe(function(message) {
   mapita.src = "../static/img/map/"+zone+".png";
 });
 
+var bg = document.getElementById("alpha")
 var button = document.getElementById("starto");
 button.style.display = "none";
+bg.style.display = "none";
 
 }

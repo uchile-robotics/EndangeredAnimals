@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
+    <img id="alpha" class="alpha" src="../static/img/bg.png">
+    <button  id="starto" onclick="ws_connect()"><img class="start_img" src="../static/img/start.png"></button>
     <div class="animal_pic">
         <img id="foto" src="../static/img/animals/none.jpg">
     </div>
@@ -23,8 +25,7 @@
         <input id="datos_extra" type="text" name="datos_extra"><br><br>
         <label for="autor">Esto me lo enseñó </label>
         <input id="autor" type="text" name="autor"><br><br>
-        <input type="button" name="submit" value="Enviar!" onclick="info_publisher()">
-        <input id="starto" type="button" name="start" value="Empieza!" onclick="ws_connect()">
+        <button  id="send" onclick="info_publisher()">Enviar!</button>
     </form>
 </body>
 </html>
