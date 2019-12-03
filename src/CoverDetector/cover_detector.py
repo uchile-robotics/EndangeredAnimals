@@ -25,25 +25,10 @@ class CoverDetectorServer:
         rospy.loginfo("Detector created with name: ")
         self.bridge = CvBridge()
 
-        rospy.Service('/cover_detector/detect', DepthDetection, self.process_frame)
+        rospy.Service('/cover_detector/detect', DepthDetection, self.process)
 
-        """
-        self.pub_rgb=rospy.Publisher("Disk",Image,queue_size=20)
-        self.pub_depth=rospy.Publisher("Disk_depth",Image,queue_size=20)
-        self.pub_crop=rospy.Publisher("Disk_crop",Image,queue_size=20)
-        self.image_sub = message_filters.Subscriber("/maqui/camera/front/image_raw", Image)
-        self.depth_sub = message_filters.Subscriber("/maqui/camera/depth/image_raw", Image)
-        self.depth_info = message_filters.Subscriber("/maqui/camera/depth/camera_info", CameraInfo)
-        self.image_info= message_filters.Subscriber("/maqui/camera/front/camera_info", CameraInfo)
 
-        ts = message_filters.ApproximateTimeSynchronizer([self.image_sub,self.depth_sub,self.depth_info,self.image_info],30,1)
-        #ts = message_filters.TimeSynchronizer([self.image_sub,self.depth_sub,self.depth_info,self.image_info],20)
-        ts.registerCallback(self.image_callback)
-        self.listener = tf.TransformListener()
-        """
-
-    #def process_frame(self,image,depth_image,depth_info,image_info):
-    def process_frame(self,req):
+    def process(self,req):
 
         resp= DepthDetectionResponse()
 
@@ -89,7 +74,13 @@ class CoverDetectorServer:
         mask[(depth_image_2<=minimo+40)]=255
         mask=np.uint8(mask)
 
-        contours, hierachy ,tmp = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+        try:
+            contours, hierachy ,tmp = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        except:
+            contours, hierachy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            contours=contours[0]
+
 
         x,y,w,h=cv2.boundingRect(contours)
 
@@ -127,14 +118,7 @@ class CoverDetectorServer:
         resp.labels.append("Cover")
         
         return resp
-        
-        
-       
-        
-   # def Process(self):
-        
-#rospy.Subscriber("/camera/depth/image_raw", Image, image_callback, queue_size = 1, buff_size = 16777216)
-#cv2.destroyAllWindows()
+
   
 def main():
     rospy.init_node('disk_detector_server')
