@@ -27,10 +27,20 @@ class MapHandler(tornado.web.RequestHandler):
 	def get(self):
 		self.render("map.html")
 
+class PicsHandler(tornado.web.RequestHandler):
+	def get(self):
+		self.render("pics.html")
+
+class InitHandler(tornado.web.RequestHandler):
+	def get(self):
+		self.render("first.html")
+
 # Url's 
 app = tornado.web.Application([
 	(r'/', IndexHandler),
 	(r'/map', MapHandler),
+	(r'/pics', PicsHandler),
+	(r'/init', InitHandler),
 ], **settings)
 
 # Corre el servidor
